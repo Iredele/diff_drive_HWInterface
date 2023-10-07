@@ -146,11 +146,11 @@ hardware_interface::CallbackReturn DiffDriveArduinoHardware::on_configure(
   const rclcpp_lifecycle::State & /*previous_state*/)
 {
   RCLCPP_INFO(rclcpp::get_logger("DiffDriveArduinoHardware"), "Configuring ...please wait...");
-  if (comms_.connected())
-  {
-    comms_.disconnect();
-  }
-  comms_.connect(cfg_.device, cfg_.baud_rate, cfg_.timeout_ms);
+  // if (comms_.connected())
+  // {
+  //   comms_.disconnect();
+  // }
+  // comms_.connect(cfg_.device, cfg_.baud_rate, cfg_.timeout_ms);
   RCLCPP_INFO(rclcpp::get_logger("DiffDriveArduinoHardware"), "Successfully configured!");
 
   return hardware_interface::CallbackReturn::SUCCESS;
@@ -160,10 +160,10 @@ hardware_interface::CallbackReturn DiffDriveArduinoHardware::on_cleanup(
   const rclcpp_lifecycle::State & /*previous_state*/)
 {
   RCLCPP_INFO(rclcpp::get_logger("DiffDriveArduinoHardware"), "Cleaning up ...please wait...");
-  if (comms_.connected())
-  {
-    comms_.disconnect();
-  }
+  // if (comms_.connected())
+  // {
+  //   comms_.disconnect();
+  // }
   RCLCPP_INFO(rclcpp::get_logger("DiffDriveArduinoHardware"), "Successfully cleaned up!");
 
   return hardware_interface::CallbackReturn::SUCCESS;
@@ -174,14 +174,17 @@ hardware_interface::CallbackReturn DiffDriveArduinoHardware::on_activate(
   const rclcpp_lifecycle::State & /*previous_state*/)
 {
   RCLCPP_INFO(rclcpp::get_logger("DiffDriveArduinoHardware"), "Activating ...please wait...");
-  if (!comms_.connected())
-  {
-    return hardware_interface::CallbackReturn::ERROR;
-  }
-  if (cfg_.pid_p > 0)
-  {
-    comms_.set_pid_values(cfg_.pid_p,cfg_.pid_d,cfg_.pid_i,cfg_.pid_o);
-  }
+  // if (!comms_.connected())
+  // {
+  //   return hardware_interface::CallbackReturn::ERROR;
+  // }
+  // if (cfg_.pid_p > 0)
+  // {
+  //   comms_.set_pid_values(cfg_.pid_p,cfg_.pid_d,cfg_.pid_i,cfg_.pid_o);
+  // }
+
+  //Setup GPIO pins
+  motorController.initializePWM();
   RCLCPP_INFO(rclcpp::get_logger("DiffDriveArduinoHardware"), "Successfully activated!");
 
   return hardware_interface::CallbackReturn::SUCCESS;
@@ -199,22 +202,22 @@ hardware_interface::CallbackReturn DiffDriveArduinoHardware::on_deactivate(
 hardware_interface::return_type DiffDriveArduinoHardware::read(
   const rclcpp::Time & /*time*/, const rclcpp::Duration & period)
 {
-  if (!comms_.connected())
-  {
-    return hardware_interface::return_type::ERROR;
-  }
+  // if (!comms_.connected())
+  // {
+  //   return hardware_interface::return_type::ERROR;
+  // }
 
-  comms_.read_encoder_values(wheel_l_.enc, wheel_r_.enc);
+  // comms_.read_encoder_values(wheel_l_.enc, wheel_r_.enc);
 
-  double delta_seconds = period.seconds();
+  // double delta_seconds = period.seconds();
 
-  double pos_prev = wheel_l_.pos;
-  wheel_l_.pos = wheel_l_.calc_enc_angle();
-  wheel_l_.vel = (wheel_l_.pos - pos_prev) / delta_seconds;
+  // double pos_prev = wheel_l_.pos;
+  // wheel_l_.pos = wheel_l_.calc_enc_angle();
+  // wheel_l_.vel = (wheel_l_.pos - pos_prev) / delta_seconds;
 
-  pos_prev = wheel_r_.pos;
-  wheel_r_.pos = wheel_r_.calc_enc_angle();
-  wheel_r_.vel = (wheel_r_.pos - pos_prev) / delta_seconds;
+  // pos_prev = wheel_r_.pos;
+  // wheel_r_.pos = wheel_r_.calc_enc_angle();
+  // wheel_r_.vel = (wheel_r_.pos - pos_prev) / delta_seconds;
 
   return hardware_interface::return_type::OK;
 }
@@ -222,14 +225,13 @@ hardware_interface::return_type DiffDriveArduinoHardware::read(
 hardware_interface::return_type diffdrive_arduino ::DiffDriveArduinoHardware::write(
   const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
 {
-  if (!comms_.connected())
-  {
-    return hardware_interface::return_type::ERROR;
-  }
+  // if (!comms_.connected())
+  // {
+  //   return hardware_interface::return_type::ERROR;
+  // }
 
-  int motor_l_counts_per_loop = wheel_l_.cmd / wheel_l_.rads_per_count / cfg_.loop_rate;
-  int motor_r_counts_per_loop = wheel_r_.cmd / wheel_r_.rads_per_count / cfg_.loop_rate;
-  comms_.set_motor_values(motor_l_counts_per_loop, motor_r_counts_per_loop);
+ //Set motor speeds
+  motorController.setMotorSpeeds(wheel_l_.cmd, wheel_r_.cmd);
   return hardware_interface::return_type::OK;
 }
 

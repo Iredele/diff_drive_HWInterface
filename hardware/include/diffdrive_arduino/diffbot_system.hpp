@@ -33,6 +33,7 @@
 
 #include "diffdrive_arduino/arduino_comms.hpp"
 #include "diffdrive_arduino/wheel.hpp"
+#include "diffdrive_arduino/motor_controller.hpp"
 
 namespace diffdrive_arduino
 {
@@ -99,6 +100,7 @@ private:
   Config cfg_;
   Wheel wheel_l_;
   Wheel wheel_r_;
+  MotorControl motorController;
 };
 
 }  // namespace diffdrive_arduino
