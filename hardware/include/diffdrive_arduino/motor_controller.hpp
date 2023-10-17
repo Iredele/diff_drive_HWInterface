@@ -25,7 +25,7 @@ public:
         pwmSetRange(100);
         pwmSetClock(384);
     }
-
+/*
     void setMotorSpeeds(int leftSpeed, int rightSpeed) {
         bool dir1, dir2;
 
@@ -57,6 +57,36 @@ public:
         pwmWrite(leftMotorPin, leftPwm);
         pwmWrite(rigthMotorPin, rightPwm);
     }
+    */
+
+
+void setMotorSpeeds(double leftSpeed, double rightSpeed) {
+    // Determine direction based on the sign
+    int leftDir = (leftSpeed >= 0) ? LOW : HIGH;
+    int rightDir = (rightSpeed >= 0) ? LOW : HIGH;
+
+    // Convert speed values to the absolute range [0, 1]
+    leftSpeed = std::abs(leftSpeed);
+    rightSpeed = std::abs(rightSpeed);
+
+    // Ensure speed values are within the valid range [0, 1]
+    leftSpeed = std::max(std::min(leftSpeed, 1.0), 0.0);
+    rightSpeed = std::max(std::min(rightSpeed, 1.0), 0.0);
+
+    // Map speed to PWM range [0, 1000]
+    int leftPwm = static_cast<int>(leftSpeed * 1000);
+    int rightPwm = static_cast<int>(rightSpeed * 1000);
+
+    // Set direction
+    digitalWrite(leftMotordir, leftDir);
+    digitalWrite(rigthMotordir, rightDir);
+
+    // Set PWM values
+    pwmWrite(leftMotorPin, leftPwm);
+    pwmWrite(rigthMotorPin, rightPwm);
+}
+
+
 
 private:
     int leftMotorPin;
