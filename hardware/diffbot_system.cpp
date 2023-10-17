@@ -219,10 +219,14 @@ hardware_interface::return_type DiffDriveArduinoHardware::read(
   // wheel_r_.pos = wheel_r_.calc_enc_angle();
   // wheel_r_.vel = (wheel_r_.pos - pos_prev) / delta_seconds;
 
-  wheel_l_.pos = wheel_l_.cmd/2;
-  wheel_r_.pos = wheel_r_.cmd/2;
-  wheel_l_.vel = wheel_l_.cmd / delta_seconds;
-  wheel_r_.vel = wheel_r_.cmd / delta_seconds;
+  // wheel_l_.pos = (wheel_l_.cmd/2) + wheel_l_.pos;
+  // wheel_r_.pos = (wheel_r_.cmd/2) + wheel_r_.pos;
+  // wheel_l_.vel = (wheel_l_.cmd / delta_seconds) + wheel_l_.vel;
+  // wheel_r_.vel = (wheel_r_.cmd / delta_seconds) + wheel_r_.vel;
+    wheel_l_.pos = wheel_l_.pos + period.seconds() * wheel_l_.cmd;
+    wheel_r_.pos = wheel_r_.pos + period.seconds() * wheel_r_.cmd;
+    wheel_l_.vel = wheel_l_.cmd;
+    wheel_r_.vel = wheel_r_.cmd;   
 
   return hardware_interface::return_type::OK;
 }

@@ -29,15 +29,19 @@ public:
     void setMotorSpeeds(int leftSpeed, int rightSpeed) {
         bool dir1, dir2;
 
-        if (leftSpeed >= 0) {
-            dir1 = LOW;
-        } else {
+        if (leftSpeed < 0) {
+            //dir1 = LOW;
             dir1 = HIGH;
+        } else if (leftSpeed > 255){
+            //dir1 = HIGH;
+            dir1 = LOW;
         }
 
-        if (rightSpeed >= 0) {
+        if (rightSpeed < 0) {
+            //dir2 = HIGH;
             dir2 = HIGH;
-        } else {
+        } else if (rightSpeed > 255){
+            //dir2 = LOW;
             dir2 = LOW;
         }
 
